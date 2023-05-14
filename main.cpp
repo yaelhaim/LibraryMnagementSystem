@@ -359,7 +359,8 @@ int student::studentInterface(){
         cout << "5 - Request a book\n";
         cout << "6 - Return a book\n";
         cout << "7 - View Fine amount\n";
-        cout << "8 - Logout\n";
+        cout << "8 - Wiew read list"<<endl;
+        cout << "9 - Logout\n";
         char c;
         cout << "Enter the serial number corresponding to your query: ";
         cin >> c;
@@ -418,6 +419,9 @@ int student::studentInterface(){
             cout << "The existing fine is: " << this->fine << "\n";
         }
         else if(c=='8'){
+            chooseForReadList();
+        }
+        else if(c=='9'){
             return 0;
         }
         else cout << "Enter a valid serial number.\n";
