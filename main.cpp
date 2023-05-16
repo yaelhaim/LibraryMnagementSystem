@@ -1,8 +1,9 @@
 // Library Management System using Object-Oriented Programming in C++
-//by Kushagra Sharma
 // Kushagra Sharma
+
 #include <bits/stdc++.h>
 using namespace std;
+
 class user{
 protected:
     string password;
@@ -18,6 +19,37 @@ public:
     int usertype;// 1 for student, 2 for professor and 3 for librarian
 };
 
+class student: public user{
+public:
+    vector<string> listofissuedbooks;
+    int fine;
+    string * readList=NULL;
+    int sizeOfReadList=0;
+    int studentInterface();
+    int calculateFine(string returnDate,string dueDate);
+    void clearFineAmount();
+    void addToReadListS(string nameOfBook);
+    void chooseForReadListS();
+};
+
+class professor: public user{
+public:
+    vector<string> listofissuedbooks;
+    int fine;
+    string * readList=NULL;
+    int sizeOfReadList=0;
+    int professorInterface();
+    int calculateFine(string returnDate,string dueDate);
+    void clearFineAmount();
+    void addToReadList(string nameOfBook);
+    void chooseForReadList();
+};
+
+class librarian: public user{
+public:
+    int librarianInterface();
+};
+
 class Book{
 public:
     string title;
@@ -27,39 +59,10 @@ public:
     int available;// 0 if it is issued(not available) and 1 if it is available.
     string issuedto;// - if it is available, else username
     string issuedate;
-    string bookRequest(string id );
+    string bookRequest(string id);
     string showDueDate(int usertype);
 
 };
-
-class student: public user{
-public:
-    vector<string> listofissuedbooks;
-    int fine;
-    int studentInterface();
-    int calculateFine(string returnDate,string dueDate);
-    void clearFineAmount();
-    void addToReadList(string book);
-};
-
-class professor: public user{
-public:
-    vector<string> listofissuedbooks;
-    string * readList;
-    int sizeOfReadList=0;
-    int fine;
-    int professorInterface();
-    int calculateFine(string returnDate,string dueDate);
-    void clearFineAmount();
-    void addToReadList(string book);
-    void chooseForReadList();
-};
-
-class librarian: public user{
-public:
-    int librarianInterface();
-};
-
 
 class BookDatabase{
 public:
@@ -228,8 +231,8 @@ int professor::professorInterface(){
         cout << "5 - Request a book\n";
         cout << "6 - Return a book\n";
         cout << "7 - View Fine amount\n";
-        cout << "8 - Wiew read list"<<endl;
-        cout << "9 - Logout\n";
+        cout << "8 - view your read list\n";
+        cout << "9- Logout\n";
         char c;
         cout << "Enter the serial number corresponding to your query: ";
         cin >> c;
@@ -252,29 +255,21 @@ int professor::professorInterface(){
             if(this->fine!=0){
                 cout << "You have some existing fine. Please clear you dues.\n";
             }else{
+                int yourChoise;
                 Book temp;
-                bool answer;
-                string isb = temp.bookRequest(this->id);
-                cout<<"do you want to add the book to your future reading list? to eccept press 1 to continue requse press 0"<<endl;
-                cin>>answer;
-                if (answer==1)
-                {
-                    addToReadList(isb);
-                } else if(answer==0) {
-                    string* tmp;
-                    for(int i=0;i<sizeOfReadList;i++)
-                    {
-                        if(readList[i]==isb) {
-                            tmp = new string[sizeOfReadList-1];
-                            for(int j=0;j<sizeOfReadList;j++)
-                                if(i!=j)
-                                    tmp[j]=readList[i];
-                        }
-                    }
-                    sizeOfReadList-=1;
-                    readList=tmp;
-                    this->listofissuedbooks.push_back(isb);
+                string temp2;
+                cout<<"1.Add to read list"<<endl<<"2.Request book"<<endl;
+                cin>>yourChoise;
+                if(yourChoise==1) {
+                    cout<<"Enter name of book"<<endl;
+                    cin>>temp2;
+                    addToReadList(temp2);
+                    cout<<"Added to reading list"<<endl;
                 }
+                else if(yourChoise==2) {
+                    string isb = temp.bookRequest(this->id);
+                } else
+                    return 0;
             }
         }else if(c=='6'){
             cout << "Enter the name of the book you want to return: ";
@@ -306,7 +301,8 @@ int professor::professorInterface(){
 
         }else if(c=='7'){
             cout << "The existing fine is: " << this->fine << "\n";
-        } else if(c=='8'){
+        }
+        else if(c=='8'){
             chooseForReadList();
         }
         else if(c=='9'){
@@ -359,8 +355,8 @@ int student::studentInterface(){
         cout << "5 - Request a book\n";
         cout << "6 - Return a book\n";
         cout << "7 - View Fine amount\n";
-        cout << "8 - Wiew read list"<<endl;
-        cout << "9 - Logout\n";
+        cout << "9 - View read list\n";
+        cout << "8 - Logout\n";
         char c;
         cout << "Enter the serial number corresponding to your query: ";
         cin >> c;
@@ -383,11 +379,24 @@ int student::studentInterface(){
                 cout << "You have some existing fine. Please clear you dues.\n";
             }else if(this->listofissuedbooks.size()>=5){
                 cout << "You already have 5 issued books, return one to issue another.\n";
-            }else{
-                Book temp;
-                string isb = temp.bookRequest(this->id);
-                this->listofissuedbooks.push_back(isb);
-            }
+                }else{
+                    int yourChoise;
+                    Book temp;
+                    string temp2;
+                    cout<<"1.Add to read list"<<endl<<"2.Request book"<<endl;
+                    cin>>yourChoise;
+                    if(yourChoise==1) {
+                        cout<<"Enter name of book"<<endl;
+                        cin>>temp2;
+                        addToReadListS(temp2);
+                        cout<<"Added to reading list"<<endl;
+                    }
+                    else if(yourChoise==2) {
+                        string isb = temp.bookRequest(this->id);
+                    } else
+                        return 0;
+                }
+
         }else if(c=='6'){
             cout << "Enter the name of the book you want to return: ";
             string t;
@@ -419,7 +428,7 @@ int student::studentInterface(){
             cout << "The existing fine is: " << this->fine << "\n";
         }
         else if(c=='8'){
-            chooseForReadList();
+            chooseForReadListS();
         }
         else if(c=='9'){
             return 0;
@@ -465,7 +474,6 @@ void student::clearFineAmount(){
 string Book::bookRequest(string id){
     cout << "Enter the name of the book: ";
     string t;
-    bool answer;
     while(t=="")getline(cin,t);
     Book temp;
     int nb=listOfBooks.size();
@@ -476,12 +484,7 @@ string Book::bookRequest(string id){
             cout << "Please Enter the issue date(DDMMYYYY): ";
             cin >> t;
             listOfBooks[i].issuedate=t;
-            cout<<"do you want to add the book to your future reading list? to eccept press 1 to continue press o"<<endl;
-            cin>>answer;
-            if (answer)
-            {
-                return listOfBooks[i].title;
-            }
+            cout << "Book issued successfully!\n";
             return listOfBooks[i].isbn;
         }
     }
@@ -1038,14 +1041,15 @@ int main(){
     updateDatabase();
     return 0;
 }
-void professor:: addToReadList(string nameOFbook)
+void professor:: addToReadList(string nameOfBook)
 {
     this->sizeOfReadList+=1;
     string* newReadList=new string [sizeOfReadList];
     for(int i=0;i<sizeOfReadList;i++)
         newReadList[i]=readList[i];
-    newReadList[sizeOfReadList-1]=nameOFbook;
+    newReadList[sizeOfReadList-1]=nameOfBook;
     this->readList=newReadList;
+    delete newReadList;
 }
 void professor:: chooseForReadList(){
     string * str;
@@ -1060,8 +1064,37 @@ void professor:: chooseForReadList(){
     this->listofissuedbooks.push_back(readList[choice-1]);
     for(int i=0;i<sizeOfReadList;i++)
         for(int j=0;j<sizeOfReadList;j++)
-             if(i!=j)
-                 str[j]=readList[i];
+            if(i!=j)
+                str[j]=readList[i];
     sizeOfReadList-=1;
     readList=str;
 }
+void student:: addToReadListS(string nameOfBook)
+{
+    this->sizeOfReadList+=1;
+    string* newReadList=new string [sizeOfReadList];
+    for(int i=0;i<sizeOfReadList;i++)
+        newReadList[i]=readList[i];
+    newReadList[sizeOfReadList-1]=nameOfBook;
+    this->readList=newReadList;
+    delete newReadList;
+}
+void student:: chooseForReadListS(){
+    string * str;
+    str = new string[sizeOfReadList-1];
+    cout<<" choose number to enter press 0"<<endl;
+    for(int i=0;i<sizeOfReadList;i++)
+        cout<<i-1<<"."<<" "<<readList[i]<<endl;
+    int choice;
+    cin>>choice;
+    if(choice==0)
+        return;
+    this->listofissuedbooks.push_back(readList[choice-1]);
+    for(int i=0;i<sizeOfReadList;i++)
+        for(int j=0;j<sizeOfReadList;j++)
+            if(i!=j)
+                str[j]=readList[i];
+    sizeOfReadList-=1;
+    readList=str;
+}
+
